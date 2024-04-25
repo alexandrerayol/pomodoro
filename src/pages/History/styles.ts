@@ -6,7 +6,7 @@ export const HistoryContainer = styled.main`
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  padding: 3.5rem;
+  padding: 3.5rem 1rem;
 `;
 
 export const HistoryTittle = styled.h1`
