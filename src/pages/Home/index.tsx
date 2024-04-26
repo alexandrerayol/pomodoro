@@ -1,16 +1,37 @@
 import { PlayCircle } from "@phosphor-icons/react";
-import { FormContainer, FormCountDown, FormHeader, HomeContainer } from "./styles";
+import { useForm } from "react-hook-form";
+
+import {
+  FormContainer,
+  FormCountDown,
+  FormHeader,
+  HomeContainer,
+} from "./styles";
+
 export function Home() {
+  const { register, handleSubmit, reset } = useForm({
+    defaultValues: {
+      task: "",
+      minutesAmount: 5,
+    },
+  });
+
+  function handleCreateNewPomodoro(data: any) {
+    console.log(data);
+    reset();
+  }
+
   return (
     <HomeContainer>
-      <FormContainer>
+      <FormContainer onSubmit={handleSubmit(handleCreateNewPomodoro)}>
         <FormHeader>
           <label htmlFor="task">Vou trabalhar em</label>
           <input
             type="text"
-            id="task"
             placeholder="Dê um nome para o seu projeto"
             list="taskList"
+            required
+            {...register("task", { maxLength: 25 })}
           />
           <datalist id="taskList">
             <option value="Projeto 1" />
@@ -19,7 +40,19 @@ export function Home() {
           </datalist>
 
           <label htmlFor="amountMinutes">durante</label>
-          <input type="number" id="amountMinutes" placeholder="00" step={5} min={5} max={60} maxLength={2}/>
+          <input
+            type="number"
+            placeholder="00"
+            step={5}
+            min={5}
+            max={60}
+            defaultValue={5}
+            {...register("minutesAmount", {
+              valueAsNumber: true,
+              min: 5,
+              max: 60,
+            })}
+          />
           <span>minutos</span>
         </FormHeader>
         <FormCountDown>
@@ -29,7 +62,7 @@ export function Home() {
           <span>0</span>
           <span>0</span>
         </FormCountDown>
-        <button type="submit" disabled>
+        <button type="submit">
           <PlayCircle size={32} weight="duotone" />
           Começar
         </button>
