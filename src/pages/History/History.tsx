@@ -1,11 +1,16 @@
+import { useContext, useEffect } from "react";
 import {
   HistoryContainer,
   HistoryTableContainer,
   HistoryTittle,
   Status,
 } from "./styles";
+import { CycleContext } from "../../contexts/CycleContext";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 export function History() {
+  const { cycles } = useContext(CycleContext);
   return (
     <HistoryContainer>
       <HistoryTittle>Meu histórico</HistoryTittle>
@@ -20,42 +25,36 @@ export function History() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Descrição completa da tarefa</td>
-              <td>25 minutos</td>
-              <td>Há 1 hora</td>
-              <td>
-                <Status statusColor="yellow-500"></Status>
-                Em andamento
-              </td>
-            </tr>
-            <tr>
-              <td>Descrição completa da tarefa</td>
-              <td>25 minutos</td>
-              <td>Há 1 hora</td>
-              <td>
-                <Status statusColor="yellow-500"></Status>
-                Em andamento
-              </td>
-            </tr>
-            <tr>
-              <td>Descrição completa da tarefa</td>
-              <td>25 minutos</td>
-              <td>Há 1 hora</td>
-              <td>
-                <Status statusColor="yellow-500"></Status>
-                Em andamento
-              </td>
-            </tr>
-            <tr>
-              <td>Descrição completa da tarefa</td>
-              <td>25 minutos</td>
-              <td>Há 1 hora</td>
-              <td>
-                <Status statusColor="yellow-500"></Status>
-                Em andamento
-              </td>
-            </tr>
+            {cycles
+              .map((cycle) => (
+                <tr>
+                  <td>{cycle.task}</td>
+                  <td>{`${cycle.minutesAmount} minutos`}</td>
+                  <td>
+                    {formatDistanceToNow(new Date(cycle.startDate), {
+                      addSuffix: true,
+                      locale: ptBR,
+                    })}
+                  </td>
+                  <td>
+                    <Status
+                      statusColor={
+                        cycle.finishDate
+                          ? "green-500"
+                          : cycle.interruptDate
+                          ? "red-500"
+                          : "yellow-500"
+                      }
+                    ></Status>
+                    {cycle.finishDate
+                      ? "Concluído"
+                      : cycle.interruptDate
+                      ? "Interrompido"
+                      : "Em andamento"}
+                  </td>
+                </tr>
+              ))
+              .reverse()}
           </tbody>
         </table>
       </HistoryTableContainer>

@@ -1,71 +1,58 @@
-import { PlayCircle } from "@phosphor-icons/react";
-import { useForm } from "react-hook-form";
-
+import { PlayCircle, StopCircle } from "@phosphor-icons/react";
+import { useForm, FormProvider } from "react-hook-form";
 import {
   FormContainer,
-  FormCountDown,
-  FormHeader,
   HomeContainer,
+  StopCountdownButton,
+  StartCountdownButton,
 } from "./styles";
+import { FormCountdown } from "./components/FormCountdown";
+import { FormComponent } from "./components/Form";
+import { useContext } from "react";
+import { CycleContext } from "../../contexts/CycleContext";
+
+interface DataType {
+  task: string;
+  minutesAmount: number;
+}
 
 export function Home() {
-  const { register, handleSubmit, reset } = useForm({
+  const form = useForm<DataType>({
     defaultValues: {
       task: "",
       minutesAmount: 5,
     },
   });
 
-  function handleCreateNewPomodoro(data: any) {
-    console.log(data);
-    reset();
-  }
+  const { handleSubmit, reset } = form;
+
+  const { createNewCycle, activeCycle, interruptCycle } =
+    useContext(CycleContext);
 
   return (
     <HomeContainer>
-      <FormContainer onSubmit={handleSubmit(handleCreateNewPomodoro)}>
-        <FormHeader>
-          <label htmlFor="task">Vou trabalhar em</label>
-          <input
-            type="text"
-            placeholder="Dê um nome para o seu projeto"
-            list="taskList"
-            required
-            {...register("task", { maxLength: 25 })}
-          />
-          <datalist id="taskList">
-            <option value="Projeto 1" />
-            <option value="Projeto 12323" />
-            <option value="Projeto 12424" />
-          </datalist>
-
-          <label htmlFor="amountMinutes">durante</label>
-          <input
-            type="number"
-            placeholder="00"
-            step={5}
-            min={5}
-            max={60}
-            defaultValue={5}
-            {...register("minutesAmount", {
-              valueAsNumber: true,
-              min: 5,
-              max: 60,
-            })}
-          />
-          <span>minutos</span>
-        </FormHeader>
-        <FormCountDown>
-          <span>0</span>
-          <span>0</span>
-          <div>:</div>
-          <span>0</span>
-          <span>0</span>
-        </FormCountDown>
-        <button type="submit">
-          <PlayCircle size={32} weight="duotone" />
-          Começar
-        </button>
+      <FormContainer onSubmit={handleSubmit(createNewCycle)}>
+        <FormProvider {...form}>
+          <FormComponent />
+        </FormProvider>
+        <FormCountdown />
+        {activeCycle ? (
+          <StopCountdownButton
+            type="button"
+            onClick={() => {
+              reset();
+              interruptCycle();
+            }}
+          >
+            <StopCircle size={32} weight="duotone" />
+            Interromper
+          </StopCountdownButton>
+        ) : (
+          <StartCountdownButton type="submit">
+            <PlayCircle size={32} weight="duotone" />
+            Começar
+          </StartCountdownButton>
+        )}
       </FormContainer>
     </HomeContainer>
   );
