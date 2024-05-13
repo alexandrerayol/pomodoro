@@ -5,7 +5,8 @@ import { useFormContext } from "react-hook-form";
 
 export function FormComponent() {
   const { register } = useFormContext();
-  const { activeCycle } = useContext(CycleContext);
+  const { activeCycle, cycles } = useContext(CycleContext);
+  const firstFiveCycles = cycles.slice(0, 5);
 
   return (
     <FormContainer>
@@ -19,9 +20,11 @@ export function FormComponent() {
         disabled={activeCycle ? true : false}
       />
       <datalist id="taskList">
-        <option value="Projeto 1" />
-        <option value="Projeto 12323" />
-        <option value="Projeto 12424" />
+        {firstFiveCycles
+          ? firstFiveCycles
+              .map((cycle) => <option>{cycle.task}</option>)
+              .reverse()
+          : ""}
       </datalist>
 
       <label htmlFor="amountMinutes">durante</label>
